@@ -17,33 +17,33 @@ public class OctokitTest : MonoBehaviour
         if (Debug)
         {
             string DebugString = "";
-            DebugString += "Hourly Request Limit: " + gitHubInterface.getHourlyRequestLimit().ToString() + "\n";
-            DebugString += "Request Reset Time: " + gitHubInterface.getRequestLimitResetTime() + "\n";
+            DebugString += "Hourly Request Limit: " + gitHubInterface.GetHourlyRequestLimit().ToString() + "\n";
+            DebugString += "Request Reset Time: " + gitHubInterface.GetRequestLimitResetTime() + "\n";
             DebugString += "\n";
-            DebugString += "Current User's Name: " + gitHubInterface.getCurrentUsersName() + "\n";
-            DebugString += "Current User's # of Public Repos: " + gitHubInterface.getCurrentUsersNumberOfPublicRepos() + "\n";
-            DebugString += "Current User's GitHub URL: " + gitHubInterface.getCurrentUsersGitHubURL() + "\n";
+            DebugString += "Current User's Name: " + gitHubInterface.GetCurrentUsersName() + "\n";
+            DebugString += "Current User's # of Public Repos: " + gitHubInterface.GetCurrentUsersNumberOfPublicRepos() + "\n";
+            DebugString += "Current User's GitHub URL: " + gitHubInterface.GetCurrentUsersGitHubURL() + "\n";
             DebugString += "\n";
             DebugString += "Current User's Public(?) Repositories: " + "\n";
-            foreach (var x in gitHubInterface.getCurrentUsersRepositories())
+            foreach (var x in gitHubInterface.GetCurrentUsersRepositories())
             {
                 DebugString += x.FullName + "\n";
                 DebugString += "  Branches:" + "\n";
-                foreach (var y in gitHubInterface.getBranchesFromRepo(gitHubInterface.getCurrentUsersLogin(), x))
+                foreach (var y in gitHubInterface.getBranchesFromRepo(gitHubInterface.GetCurrentUsersLogin(), x))
                 {
                     DebugString += "    " + y.Name + "\n";
                 }
                 DebugString += "\n";
 
                 DebugString += "  Commits:" + "\n";
-                foreach (var z in gitHubInterface.getCommitsFromRepo(x))
+                foreach (var z in gitHubInterface.GetCommitsFromRepo(x))
                 {
                     DebugString += "Message: " + z.Commit.Message + "\n";
                 }
                 DebugString += "\n";
             }
 
-            DebugString += "Remaining Requests: " + gitHubInterface.getRemainingRequest().ToString();
+            DebugString += "Remaining Requests: " + gitHubInterface.GetRemainingRequest().ToString();
 
             print(DebugString);
         }
