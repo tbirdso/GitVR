@@ -69,7 +69,7 @@ public class TestGitTree : MonoBehaviour
         });
 
         foreach (ITreeBranch branch in branches)
-            branch.makeParents();
+            branch.makeParent();
 
         gitTree = new GitTree()
         {

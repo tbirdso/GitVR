@@ -18,20 +18,23 @@ public class TreeNode : MonoBehaviour, ITreeNode
     // Object representing the parent node. There can only be one true "parent" node.
     public ITreeNode Parent { get; set; }
 
+    public string ParentID { get; set; }
+
     // GameObject for node visualization
     public GameObject NodeObject { get; set; }
     
     public DateTime LastModified { get; set; }
-    public string Comment { get; set; }
+    public string Message { get; set; }
 }
 
 public interface ITreeNode
 {
     string CommitString { get; set; }
     string Author { get; set; }
+    DateTime LastModified { get; set; }
+    string Message { get; set; }
     List<ITreeNode> Children { get; set; }
     ITreeNode Parent { get; set; }
+    string ParentID { get; set; }
     GameObject NodeObject { get; set; }
-    DateTime LastModified { get; set; }
-    string Comment { get; set; }
 }
