@@ -47,14 +47,20 @@ namespace GitHubTools
             currentActiveUser = currentLoggedInUser;
         }
 
-        // changes the client credentials and updates the current user
+        /*
+         * 
+         * change user functions
+         * 
+         */
+
+        // changes the client credentials and updates the currentLoggedInuser
         public void Login(string username, string password)
         {
             client.Credentials = new Credentials(username, password);
             updateCurrentLoggedInUser();
         }
 
-        // forces a api call to change currentLoggedInUser
+        // forces an api call to change currentLoggedInUser
         private void updateCurrentLoggedInUser()
         {
             currentLoggedInUser = client.User.Current().Result;
@@ -66,29 +72,22 @@ namespace GitHubTools
             currentActiveUser = currentLoggedInUser;
         }
 
+        // sets the currentActiveUser to the specified username
         public void UpdateCurrentActiveUser(string username)
         {
             currentActiveUser = client.User.Get(username).Result;
         }
 
-        // misc helper functions
+        /*
+         * 
+         * misc helper functions
+         * 
+         */
 
         // updates ApiInfo to the latest available
         private void UpdateApiInfo()
         {
             apiInfo = client.GetLastApiInfo();
-        }
-
-        /*
-         * 
-         * Current user getter functions
-         * 
-         */
-
-        // returns a string containing the login username for the current user 
-        public string GetCurrentActiveUsersLogin()
-        {
-            return currentActiveUser.Login;
         }
 
         // returns the max number of requests per hour
@@ -122,6 +121,18 @@ namespace GitHubTools
                 return apiInfo.RateLimit.Reset;
             }
             return new DateTimeOffset();
+        }
+
+        /*
+         * 
+         * Current user getter functions
+         * 
+         */
+
+        // returns a string containing the login username for the current user 
+        public string GetCurrentActiveUsersLogin()
+        {
+            return currentActiveUser.Login;
         }
 
         // returns the current users First and Last Name
@@ -181,16 +192,38 @@ namespace GitHubTools
             return client.Repository.Commit.GetAll(repo.Id).Result;
         }
 
-        public void testFunction()
+        /*
+         * 
+         * Miscellaneous Helper Functions
+         * 
+         */
+
+        // returns the commit summary from a commit
+        public string GetSummaryFromCommit(Commit commit)
         {
-            var x = GetCommitsFromRepo(GetCurrentActiveUsersRepositories()[0])[0].Commit.Parents;
-            if (x != null)
+            string message = commit.Message;
+            if (string.IsNullOrEmpty(message)) return message;
+            for(int i = 0; i < message.Length; i++)
             {
-                foreach (var y in x)
+                if (message[i] == '\n')
                 {
-                    Debug.Log(y.Label);
+                    return message.Substring(0, i);
                 }
             }
+            return message;
+        }
+
+        public void testFunction()
+        {
+            client.Repository.Create(new NewRepository("ThomathyBirdsongVR"));
+            //var x = GetCommitsFromRepo(GetCurrentActiveUsersRepositories()[0])[0].Commit.Parents;
+            //if (x != null)
+            //{
+            //    foreach (var y in x)
+            //    {
+            //        Debug.Log(y.Label);
+            //    }
+            //}
         }
     }
 }

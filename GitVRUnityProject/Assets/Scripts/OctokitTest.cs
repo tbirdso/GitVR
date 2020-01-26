@@ -57,7 +57,9 @@ public class OctokitTest : MonoBehaviour
 
             print(DebugString);
         }
-        gitHubInterface.testFunction();
+
+        print(gitHubInterface.GetSummaryFromCommit(gitHubInterface.GetCommitsFromRepo(gitHubInterface.GetCurrentActiveUsersRepositories()[0])[0].Commit));
+        //gitHubInterface.testFunction();
     }
 
     // Update is called once per frame
