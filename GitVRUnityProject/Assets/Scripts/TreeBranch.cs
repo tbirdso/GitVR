@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TreeBranch : MonoBehaviour
 {
-    public string Name;
+    public string branchName;
     public TreeNode HeadNode;
     public int BranchLength;
     public string LastUpdated;
