@@ -16,28 +16,27 @@ namespace GitHubTools
         //constructors
         public GitHubInterface()
         {
-            updateCurrentUser();
+            UpdateCurrentUser();
         }
 
         public GitHubInterface(string username, string password)
         {
             Initialize();
             client.Credentials = new Credentials(username, password);
-            updateCurrentUser();
+            UpdateCurrentUser();
         }
         
         // changes the client credentials and updates the current user
-        public void login(string username, string password)
+        public void Login(string username, string password)
         {
             client.Credentials = new Credentials(username, password);
-            updateCurrentUser();
         } 
 
         public GitHubInterface(string accessToken)
         {
             Initialize();
             client.Credentials = new Credentials(accessToken);
-            updateCurrentUser();
+            UpdateCurrentUser();
         }
 
         // Constructor helper functions
@@ -46,31 +45,40 @@ namespace GitHubTools
             client = new GitHubClient(new ProductHeaderValue("GitVR"));
         }
 
-        private void updateCurrentUser()
+        private void UpdateCurrentUser()
         {
             currentUser = client.User.Current().Result;
+        }
+
+        private void UpdateCurrentUser(string username)
+        {
+            currentUser = client.User.Get(username).Result;
         }
 
         // misc helper functions
 
         // updates ApiInfo to the latest available
-        private void updateApiInfo()
+        private void UpdateApiInfo()
         {
             apiInfo = client.GetLastApiInfo();
         }
 
-
+        /*
+         * 
+         * Current user getter functions
+         * 
+         */
 
         // returns a string containing the login username for the current user 
-        internal string getCurrentUsersLogin()
+        internal string GetCurrentUsersLogin()
         {
             return currentUser.Login;
         }
 
         // returns the max number of requests per hour
-        public int getHourlyRequestLimit()
+        public int GetHourlyRequestLimit()
         {
-            updateApiInfo();
+            UpdateApiInfo();
             if (apiInfo.RateLimit != null)
             {
                 return apiInfo.RateLimit.Limit;
@@ -79,9 +87,9 @@ namespace GitHubTools
         }
 
         // returns the number remaining requests
-        public int getRemainingRequest()
+        public int GetRemainingRequest()
         {
-            updateApiInfo();
+            UpdateApiInfo();
             if (apiInfo.RateLimit != null)
             {
                 return apiInfo.RateLimit.Remaining;
@@ -90,9 +98,9 @@ namespace GitHubTools
         }
 
         // returns the time that the remaining requests will reset back to request limit
-        public DateTimeOffset getRequestLimitResetTime()
+        public DateTimeOffset GetRequestLimitResetTime()
         {
-            updateApiInfo();
+            UpdateApiInfo();
             if (apiInfo.RateLimit != null)
             {
                 return apiInfo.RateLimit.Reset;
@@ -101,50 +109,58 @@ namespace GitHubTools
         }
 
         // returns the current users First and Last Name
-        public string getCurrentUsersName()
+        public string GetCurrentUsersName()
         {
             //updateCurrentUser();
             return currentUser.Name;
         }
 
         // returns the current users number of public repos
-        public int getCurrentUsersNumberOfPublicRepos()
+        public int GetCurrentUsersNumberOfPublicRepos()
         {
             return currentUser.PublicRepos;
         }
 
         // returns the url link to current users github page
-        public string getCurrentUsersGitHubURL()
+        public string GetCurrentUsersGitHubURL()
         {
             return currentUser.HtmlUrl;
         }
 
         // returns a list of the current users repositories
-        public IReadOnlyList<Repository> getCurrentUsersRepositories()
+        public IReadOnlyList<Repository> GetCurrentUsersRepositories()
         {
             return client.Repository.GetAllForUser(currentUser.Login).Result;
         }
 
+
+        /*
+         * 
+         * any user/repo/etc getter functions
+         * 
+         */
+
+
         // returns a list of branches for a repository given a username and repo
-        public IReadOnlyList<Branch> getBranchesFromRepo(string username, Repository repo)
+        public IReadOnlyList<Branch> GetBranchesFromRepo(string username, Repository repo)
         {
             return client.Repository.Branch.GetAll(username, repo.Name).Result;
         }
 
         // returns a list of branches for a repository given a repo
-        public IReadOnlyList<Branch> getBranchesFromRepo(Repository repo)
+        public IReadOnlyList<Branch> GetBranchesFromRepo(Repository repo)
         {
             return client.Repository.Branch.GetAll(repo.Id).Result;
         }
 
         // returns a list of all commits for a repository given a username and repo
-        public IReadOnlyList<GitHubCommit> getCommitsFromRepo(string username, Repository repo)
+        public IReadOnlyList<GitHubCommit> GetCommitsFromRepo(string username, Repository repo)
         {
             return client.Repository.Commit.GetAll(username, repo.Name).Result;
         }
 
         // returns a list of all commits for a repository given a repository
-        public IReadOnlyList<GitHubCommit> getCommitsFromRepo(Repository repo)
+        public IReadOnlyList<GitHubCommit> GetCommitsFromRepo(Repository repo)
         {
             return client.Repository.Commit.GetAll(repo.Id).Result;
         }
