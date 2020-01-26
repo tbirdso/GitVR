@@ -61,14 +61,14 @@ namespace GitHubTools
         }
 
         // changes currentActiveUser to currentLoggedInUser
-        public void SetCurrentUserToLoggedInUser()
+        public void SetCurrentActiveUserToCurrentLoggedInUser()
         {
             currentActiveUser = currentLoggedInUser;
         }
 
         public void UpdateCurrentActiveUser(string username)
         {
-            currentLoggedInUser = client.User.Get(username).Result;
+            currentActiveUser = client.User.Get(username).Result;
         }
 
         // misc helper functions
@@ -134,19 +134,19 @@ namespace GitHubTools
         // returns the current users number of public repos
         public int GetCurrentActiveUsersNumberOfPublicRepos()
         {
-            return currentLoggedInUser.PublicRepos;
+            return currentActiveUser.PublicRepos;
         }
 
         // returns the url link to current users github page
         public string GetCurrentActiveUsersGitHubURL()
         {
-            return currentLoggedInUser.HtmlUrl;
+            return currentActiveUser.HtmlUrl;
         }
 
         // returns a list of the current users repositories
         public IReadOnlyList<Repository> GetCurrentActiveUsersRepositories()
         {
-            return client.Repository.GetAllForUser(currentLoggedInUser.Login).Result;
+            return client.Repository.GetAllForUser(currentActiveUser.Login).Result;
         }
 
 
@@ -179,6 +179,18 @@ namespace GitHubTools
         public IReadOnlyList<GitHubCommit> GetCommitsFromRepo(Repository repo)
         {
             return client.Repository.Commit.GetAll(repo.Id).Result;
+        }
+
+        public void testFunction()
+        {
+            var x = GetCommitsFromRepo(GetCurrentActiveUsersRepositories()[0])[0].Commit.Parents;
+            if (x != null)
+            {
+                foreach (var y in x)
+                {
+                    Debug.Log(y.Label);
+                }
+            }
         }
     }
 }

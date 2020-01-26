@@ -7,16 +7,17 @@ public class OctokitTest : MonoBehaviour
 {
     private GitHubInterface gitHubInterface;
 
-    public bool Debug = false;
+    public bool DebugText = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        gitHubInterface = new GitHubInterface(TestCredentials.AccessToken);
+        //gitHubInterface = new GitHubInterface(TestCredentials.AccessToken);
+        gitHubInterface = new GitHubInterface(TestCredentials.username, TestCredentials.password);
 
-        if (Debug)
+        if (DebugText)
         {
-            //gitHubInterface.UpdateCurrentActiveUser("penis");
+            gitHubInterface.UpdateCurrentActiveUser("apmason13");
             string DebugString = "";
             DebugString += "Hourly Request Limit: " + gitHubInterface.GetHourlyRequestLimit().ToString() + "\n";
             DebugString += "Request Reset Time: " + gitHubInterface.GetRequestLimitResetTime() + "\n";
@@ -28,7 +29,7 @@ public class OctokitTest : MonoBehaviour
             DebugString += "Current User's Public(?) Repositories: " + "\n";
             foreach (var x in gitHubInterface.GetCurrentActiveUsersRepositories())
             {
-                DebugString += x.FullName + "\n";
+                DebugString += "Repo: " + x.FullName + "\n";
                 DebugString += "  Branches:" + "\n";
                 foreach (var y in gitHubInterface.GetBranchesFromRepo(gitHubInterface.GetCurrentActiveUsersLogin(), x))
                 {
@@ -39,6 +40,14 @@ public class OctokitTest : MonoBehaviour
                 DebugString += "  Commits:" + "\n";
                 foreach (var z in gitHubInterface.GetCommitsFromRepo(x))
                 {
+                    if (z.Commit.Parents != null)
+                    {
+                        DebugString += "Parents: ";
+                        foreach (var a in z.Commit.Parents)
+                        {
+                            DebugString += a.Label + " ";
+                        }
+                    }
                     DebugString += "Message: " + z.Commit.Message + "\n\n\n";
                 }
                 DebugString += "\n";
@@ -48,6 +57,7 @@ public class OctokitTest : MonoBehaviour
 
             print(DebugString);
         }
+        gitHubInterface.testFunction();
     }
 
     // Update is called once per frame
