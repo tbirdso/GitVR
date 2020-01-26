@@ -12,7 +12,6 @@ public class OctokitTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //gitHubInterface = new GitHubInterface(TestCredentials.AccessToken);
         gitHubInterface = new GitHubInterface(TestCredentials.username, TestCredentials.password);
 
         if (DebugText)
@@ -55,7 +54,7 @@ public class OctokitTest : MonoBehaviour
 
             DebugString += "Remaining Requests: " + gitHubInterface.GetRemainingRequest().ToString();
 
-            print(DebugString);
+            UnityEngine.Debug.Log(DebugString);
         }
 
         foreach (var x in gitHubInterface.GetCommitsFromRepo("numato", "samplecode"))

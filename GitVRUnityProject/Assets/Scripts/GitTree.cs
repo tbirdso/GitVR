@@ -7,14 +7,37 @@ using UnityEngine;
 public class GitTree : MonoBehaviour, IGitTree
 {
     public string RepoName { get; set; }
+    public string Owner { get; set; }
+    public string Description { get; set; }
     public List<ITreeBranch> Branches { get; set; }
-    public ITreeNode HeadNode
+    public List<ITreeNode> Nodes { get; set; }
+    public ITreeNode HeadNode { get; set; }
+
+    public void makeBranchesFromData()
     {
-        get
+        // Form master branch first
+        IEnumerable<ITreeBranch> queryResult = Branches.Where(b => b.BranchName.Equals("master"));
+        if (queryResult.Count() < 1) throw new NullReferenceException("Could not find the master branch!");
+
+        ITreeNode rover = queryResult.ElementAt(0).HeadNode;
+        while(rover.Parent != null)
         {
-            IEnumerable<ITreeBranch> queryResult = Branches.Where(branch => branch.BranchName.Equals("master"));
-            return (queryResult.Count() > 0 ? queryResult.ElementAt(0).HeadNode : null);
+            rover = rover.Parent;
         }
+        queryResult.ElementAt(0).BaseNode = rover;
+
+        //Trace each branch to its fork from the master branch
+        foreach(ITreeBranch branch in Branches.Where(b => !b.BranchName.Equals("master")))
+        {
+            rover = branch.HeadNode;
+            while(rover.Parent != null && getNodeInBranch(rover.CommitString, "master") == null)
+            {
+                rover = rover.Parent;
+            }
+
+            branch.BaseNode = rover;
+        }
+
     }
 
     public ITreeBranch getMostRecentBranch()
@@ -44,6 +67,22 @@ public class GitTree : MonoBehaviour, IGitTree
         return branch.getNthNode(n);
     }
 
+    public ITreeNode getNodeInBranch(string commitString, string branchName)
+    {
+        ITreeBranch branch = getBranch(branchName);
+
+        ITreeNode rover = branch.HeadNode;
+
+        while(rover != branch.BaseNode && rover != null)
+        {
+            if (rover.CommitString.Equals(commitString)) return rover;
+
+            rover = rover.Parent;
+        }
+
+        return (rover != null && rover.CommitString.Equals(commitString)) ? rover : null;
+    }
+
     public ITreeNode getNode(string commitString)
     {
         /* PROCEDURE:
@@ -52,8 +91,32 @@ public class GitTree : MonoBehaviour, IGitTree
          * Search up left branch
          * Search up right branch
          */
+        try
+        {
+            return searchDownRecursive(HeadNode, commitString);
+        }
+        catch(Exception)
+        {
+            return null;
+        }
+    }
 
-        return searchDownRecursive(HeadNode, commitString);
+    public void appendChildToNode(ITreeNode child, string parentString)
+    {
+        ITreeNode node = getNode(parentString);
+
+        if( node.Children.Where(c => c.CommitString.Equals(parentString)).Count() == 0)
+        {
+            node.Children.Add(child);
+        }
+
+    }
+
+    public void appendParentToNode(ITreeNode parent, string childString)
+    {
+        ITreeNode node = getNode(childString);
+
+        if (node.Parent == null) node.Parent = parent;
     }
 
     /// <summary>
@@ -116,6 +179,8 @@ public class GitTree : MonoBehaviour, IGitTree
     {
         ITreeNode retNode = null;
 
+        if (node.CommitString.Equals(target)) return node;
+
         // If the parent node is what we are looking for then return it
         if (node.Parent != null && node.Parent.CommitString.Equals(target))
             return node.Parent;
@@ -160,16 +225,25 @@ public class GitTree : MonoBehaviour, IGitTree
     }
 }
 
-interface IGitTree
+public interface IGitTree
 {
     string RepoName { get; set; }
+    string Description { get; set; }
+    string Owner { get; set; }
+    List<ITreeNode> Nodes { get; set; }
     List<ITreeBranch> Branches { get; set; }
-    ITreeNode HeadNode { get; }
+    ITreeNode HeadNode { get; set; }
+
+    void makeBranchesFromData();
 
     ITreeBranch getMostRecentBranch();
     ITreeBranch getBranch(string branchName);
     ITreeNode getNthNodeInBranch(int n, string branchName);
+    ITreeNode getNodeInBranch(string commitString, string branchName);
     ITreeNode getNode(string commitString);
+
+    void appendChildToNode(ITreeNode child, string parentString);
+    void appendParentToNode(ITreeNode parent, string childString);
 
     // TODO: redesign with necessary parameters
     void buildTree(Vector3 StartPosition, GameObject NodePrefab, Vector3 BranchDelta);

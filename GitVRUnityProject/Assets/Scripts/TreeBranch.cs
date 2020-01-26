@@ -46,7 +46,7 @@ public class TreeBranch : MonoBehaviour, ITreeBranch
         return retNode;
     }
 
-    public void makeParents()
+    public void makeParent()
     {
         ITreeNode rover = HeadNode;
 
@@ -72,5 +72,5 @@ public interface ITreeBranch
     string Comment { get; set; }
     
     ITreeNode getNthNode(int n);
-    void makeParents();
+    void makeParent();
 }
