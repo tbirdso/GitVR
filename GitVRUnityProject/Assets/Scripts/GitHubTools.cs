@@ -11,32 +11,28 @@ namespace GitHubTools
         // variables
         private GitHubClient client;
         private ApiInfo apiInfo;
-        private User currentUser;
+        private User currentLoggedInUser;
+        private User currentActiveUser;
 
         //constructors
         public GitHubInterface()
         {
-            UpdateCurrentUser();
+            Initialize();
+            InitializePhaseTwo();
         }
 
         public GitHubInterface(string username, string password)
         {
             Initialize();
             client.Credentials = new Credentials(username, password);
-            UpdateCurrentUser();
+            InitializePhaseTwo();
         }
-        
-        // changes the client credentials and updates the current user
-        public void Login(string username, string password)
-        {
-            client.Credentials = new Credentials(username, password);
-        } 
 
         public GitHubInterface(string accessToken)
         {
             Initialize();
             client.Credentials = new Credentials(accessToken);
-            UpdateCurrentUser();
+            InitializePhaseTwo();
         }
 
         // Constructor helper functions
@@ -45,14 +41,34 @@ namespace GitHubTools
             client = new GitHubClient(new ProductHeaderValue("GitVR"));
         }
 
-        private void UpdateCurrentUser()
+        private void InitializePhaseTwo()
         {
-            currentUser = client.User.Current().Result;
+            updateCurrentLoggedInUser();
+            currentActiveUser = currentLoggedInUser;
         }
 
-        private void UpdateCurrentUser(string username)
+        // changes the client credentials and updates the current user
+        public void Login(string username, string password)
         {
-            currentUser = client.User.Get(username).Result;
+            client.Credentials = new Credentials(username, password);
+            updateCurrentLoggedInUser();
+        }
+
+        // forces a api call to change currentLoggedInUser
+        private void updateCurrentLoggedInUser()
+        {
+            currentLoggedInUser = client.User.Current().Result;
+        }
+
+        // changes currentActiveUser to currentLoggedInUser
+        public void SetCurrentUserToLoggedInUser()
+        {
+            currentActiveUser = currentLoggedInUser;
+        }
+
+        public void UpdateCurrentActiveUser(string username)
+        {
+            currentLoggedInUser = client.User.Get(username).Result;
         }
 
         // misc helper functions
@@ -70,9 +86,9 @@ namespace GitHubTools
          */
 
         // returns a string containing the login username for the current user 
-        internal string GetCurrentUsersLogin()
+        public string GetCurrentActiveUsersLogin()
         {
-            return currentUser.Login;
+            return currentActiveUser.Login;
         }
 
         // returns the max number of requests per hour
@@ -109,28 +125,28 @@ namespace GitHubTools
         }
 
         // returns the current users First and Last Name
-        public string GetCurrentUsersName()
+        public string GetCurrentActiveUsersName()
         {
             //updateCurrentUser();
-            return currentUser.Name;
+            return currentActiveUser.Name;
         }
 
         // returns the current users number of public repos
-        public int GetCurrentUsersNumberOfPublicRepos()
+        public int GetCurrentActiveUsersNumberOfPublicRepos()
         {
-            return currentUser.PublicRepos;
+            return currentLoggedInUser.PublicRepos;
         }
 
         // returns the url link to current users github page
-        public string GetCurrentUsersGitHubURL()
+        public string GetCurrentActiveUsersGitHubURL()
         {
-            return currentUser.HtmlUrl;
+            return currentLoggedInUser.HtmlUrl;
         }
 
         // returns a list of the current users repositories
-        public IReadOnlyList<Repository> GetCurrentUsersRepositories()
+        public IReadOnlyList<Repository> GetCurrentActiveUsersRepositories()
         {
-            return client.Repository.GetAllForUser(currentUser.Login).Result;
+            return client.Repository.GetAllForUser(currentLoggedInUser.Login).Result;
         }
 
 
