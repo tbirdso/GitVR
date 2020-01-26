@@ -29,7 +29,7 @@ public class OctokitTest : MonoBehaviour
             {
                 DebugString += x.FullName + "\n";
                 DebugString += "  Branches:" + "\n";
-                foreach (var y in gitHubInterface.getBranchesFromRepo(gitHubInterface.GetCurrentUsersLogin(), x))
+                foreach (var y in gitHubInterface.GetBranchesFromRepo(gitHubInterface.GetCurrentUsersLogin(), x))
                 {
                     DebugString += "    " + y.Name + "\n";
                 }

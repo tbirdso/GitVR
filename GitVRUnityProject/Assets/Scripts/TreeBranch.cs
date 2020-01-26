@@ -1,23 +1,76 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class TreeBranch : MonoBehaviour
+public class TreeBranch : MonoBehaviour, ITreeBranch
 {
-    public string Name;
-    public TreeNode HeadNode;
-    public int BranchLength;
-    public string LastUpdated;
+    public string BranchName { get; set; }
+    public ITreeNode HeadNode { get; set; }
+    public ITreeNode BaseNode { get; set; }
+    public int BranchLength {
+        get
+        {
+            int counter = 1;
+            ITreeNode rover = HeadNode;
+            while(rover.Parent != null && !rover.CommitString.Equals(BaseNode.CommitString))
+            {
+                counter++;
+                rover = rover.Parent;
+            }
 
-    public TreeNode getNthNodeInBranch(int n)
+            return counter;
+        }
+    }
+    public DateTime LastModified {
+        get
+        {
+            return HeadNode.LastModified;
+        }
+
+    }
+    public string Comment { get; set; }
+
+    public ITreeNode getNthNode(int n)
     {
-        TreeNode retNode = HeadNode;
+        if (n > BranchLength) return null;
 
-        for (int i = 0; i < n && retNode.Parent != null; i++)
+        ITreeNode retNode = HeadNode;
+
+        for (int i = 0; i < n && retNode.Parent != null && !retNode.CommitString.Equals(BaseNode); i++)
         {
             retNode = retNode.Parent;
         }
 
         return retNode;
     }
+
+    public void makeParents()
+    {
+        ITreeNode rover = HeadNode;
+
+        while(rover.Parent != null && !rover.CommitString.Equals(BaseNode.CommitString))
+        {
+            if (rover.Parent.Children == null) rover.Parent.Children = new List<ITreeNode>();
+
+            IEnumerable<ITreeNode> queryResult = rover.Parent.Children.Where(child => child.CommitString.Equals(rover.CommitString));
+            if (queryResult.Count() == 0) rover.Parent.Children.Add(rover);
+
+            rover = rover.Parent;
+        }
+    }
+}
+
+public interface ITreeBranch
+{
+    string BranchName { get; set; }
+    ITreeNode HeadNode { get; set; }
+    ITreeNode BaseNode { get; set; }
+    int BranchLength { get; }
+    DateTime LastModified { get; }
+    string Comment { get; set; }
+    
+    ITreeNode getNthNode(int n);
+    void makeParents();
 }
