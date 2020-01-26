@@ -6,19 +6,22 @@ using UnityEngine;
 
 public class GitManager : MonoBehaviour
 {
-
+    public GameObject prefab;
+    public Vector3 dist;
     private GitHubInterface gitHubInterface;
+    private IGitTree GithubTree;
 
     // Start is called before the first frame update
     void Start()
     {
-        GetGithubData("samplecode");
+        GithubTree = GetGithubData("WPF-Samples");
+        GithubTree.buildTree(new Vector3(0, 0, 0), prefab, dist);
     }
 
     public IGitTree GetGithubData(string repository)
     {
         gitHubInterface = new GitHubInterface(TestCredentials.username, TestCredentials.password);
-        gitHubInterface.UpdateCurrentActiveUser("numato");
+        gitHubInterface.UpdateCurrentActiveUser("microsoft");
 
         var x = gitHubInterface.GetCurrentActiveUsersRepositories().Where(repo => repo.Name.Contains(repository)).ElementAt(0);
 
@@ -51,7 +54,7 @@ public class GitManager : MonoBehaviour
         RepoData.HeadNode = nodes.Last();
 
         List<ITreeBranch> branches = new List<ITreeBranch>();
-        foreach (var y in gitHubInterface.GetBranchesFromRepo(gitHubInterface.GetCurrentActiveUsersLogin(), x))
+        foreach (var y in gitHubInterface.GetBranchesFromRepo(x))
         {
             List<ITreeNode> queryResult = (from node in nodes where node.CommitString.Equals(y.Commit.Sha) select node).ToList<ITreeNode>();
             if (queryResult.Count() > 0) {
