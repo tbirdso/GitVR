@@ -30,7 +30,7 @@ public class OctokitTest : MonoBehaviour
             {
                 DebugString += "Repo: " + x.FullName + "\n";
                 DebugString += "  Branches:" + "\n";
-                foreach (var y in gitHubInterface.GetBranchesFromRepo(gitHubInterface.GetCurrentActiveUsersLogin(), x))
+                foreach (var y in gitHubInterface.GetBranchesFromRepo(x))
                 {
                     DebugString += "    " + y.Name + "\n";
                 }
@@ -39,12 +39,12 @@ public class OctokitTest : MonoBehaviour
                 DebugString += "  Commits:" + "\n";
                 foreach (var z in gitHubInterface.GetCommitsFromRepo(x))
                 {
-                    if (z.Commit.Parents != null)
+                    if (z.Parents != null)
                     {
                         DebugString += "Parents: ";
-                        foreach (var a in z.Commit.Parents)
+                        foreach (var a in z.Parents)
                         {
-                            DebugString += a.Label + " ";
+                            DebugString += a.Url + " ";
                         }
                     }
                     DebugString += "Message: " + z.Commit.Message + "\n\n\n";
@@ -57,8 +57,12 @@ public class OctokitTest : MonoBehaviour
             UnityEngine.Debug.Log(DebugString);
         }
 
-        print(gitHubInterface.GetSummaryFromCommit(gitHubInterface.GetCommitsFromRepo(gitHubInterface.GetCurrentActiveUsersRepositories()[0])[0].Commit));
-        //gitHubInterface.testFunction();
+        foreach (var x in gitHubInterface.GetCommitsFromRepo("numato", "samplecode"))
+        {
+            print(x);
+        }        
+        
+
     }
 
     // Update is called once per frame

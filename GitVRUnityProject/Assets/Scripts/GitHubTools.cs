@@ -169,9 +169,9 @@ namespace GitHubTools
 
 
         // returns a list of branches for a repository given a username and repo
-        public IReadOnlyList<Branch> GetBranchesFromRepo(string username, Repository repo)
+        public IReadOnlyList<Branch> GetBranchesFromRepo(string username, string repo)
         {
-            return client.Repository.Branch.GetAll(username, repo.Name).Result;
+            return client.Repository.Branch.GetAll(username, repo).Result;
         }
 
         // returns a list of branches for a repository given a repo
@@ -181,9 +181,9 @@ namespace GitHubTools
         }
 
         // returns a list of all commits for a repository given a username and repo
-        public IReadOnlyList<GitHubCommit> GetCommitsFromRepo(string username, Repository repo)
+        public IReadOnlyList<GitHubCommit> GetCommitsFromRepo(string username, string repo)
         {
-            return client.Repository.Commit.GetAll(username, repo.Name).Result;
+            return client.Repository.Commit.GetAll(username, repo).Result;
         }
 
         // returns a list of all commits for a repository given a repository
