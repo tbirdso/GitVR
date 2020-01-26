@@ -168,6 +168,12 @@ namespace GitHubTools
          */
 
 
+        // returns the repo from its name
+        public Repository GetRepository(string username, string repo)
+        {
+            return client.Repository.Get(username, repo).Result;
+        }
+
         // returns a list of branches for a repository given a username and repo
         public IReadOnlyList<Branch> GetBranchesFromRepo(string username, string repo)
         {
