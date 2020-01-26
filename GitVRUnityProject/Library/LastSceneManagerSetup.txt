@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/LineRendererScene.unity
+- path: Assets/Oculus/VR/Scenes/ControllerModels.unity
   isLoaded: 1
   isActive: 1

@@ -151,6 +151,8 @@ public class OVRPlayerController : MonoBehaviour
 	private bool ReadyToSnapTurn; // Set to true when a snap turn has occurred, code requires one frame of centered thumbstick to enable another snap turn.
 	private bool playerControllerEnabled = false;
 
+    public GameObject objectToScale;
+
 	void Start()
 	{
 		// Add eye-depth as a camera offset from the player controller
@@ -405,6 +407,18 @@ public class OVRPlayerController : MonoBehaviour
 									   Vector3.right);
 		}
 
+        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp) ||
+                    (RotationEitherThumbstick && OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp)))
+        {
+            objectToScale.transform.localScale += new Vector3(0.01f, 0.01f, 0.01f);         
+        }
+        else if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown) ||
+                    (RotationEitherThumbstick && OVRInput.Get(OVRInput.Button.PrimaryThumbstickDown)))
+        {
+            objectToScale.transform.localScale -= new Vector3(0.01f, 0.01f, 0.01f);
+        }
+        
+        
 		if (EnableRotation)
 		{
 			Vector3 euler = transform.rotation.eulerAngles;
@@ -435,6 +449,7 @@ public class OVRPlayerController : MonoBehaviour
 
 			if (SnapRotation)
 			{
+
 				if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickLeft) ||
 					(RotationEitherThumbstick && OVRInput.Get(OVRInput.Button.PrimaryThumbstickLeft)))
 				{
@@ -474,7 +489,8 @@ public class OVRPlayerController : MonoBehaviour
 
 			transform.rotation = Quaternion.Euler(euler);
 		}
-	}
+        
+    }
 
 
 	/// <summary>
