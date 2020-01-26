@@ -14,16 +14,16 @@ public class GitManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GithubTree = GetGithubData("WPF-Samples");
+        GithubTree = GetGithubData();
         GithubTree.buildTree(new Vector3(0, 0, 0), prefab, dist);
     }
 
-    public IGitTree GetGithubData(string repository)
+    public IGitTree GetGithubData()
     {
         gitHubInterface = new GitHubInterface(TestCredentials.username, TestCredentials.password);
         gitHubInterface.UpdateCurrentActiveUser("microsoft");
 
-        var x = gitHubInterface.GetCurrentActiveUsersRepositories().Where(repo => repo.Name.Contains(repository)).ElementAt(0);
+        var x = gitHubInterface.GetRepository("microsoft", "WPF-Samples");
 
         IGitTree RepoData = new GitTree()
         {
